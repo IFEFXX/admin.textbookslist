@@ -17,46 +17,43 @@ const tbody = document.getElementById('data-body');
 const totalLabel = document.getElementById('total-amount');
 const totalResponsesLabel = document.getElementById('totalr');
 
-// Function to fetch data and populate the table
+// Function to fetch data, remove duplicates, sort alphabetically, and populate the table
 async function fetchData() {
     try {
         const snapshot = await db.collection("data").get();
-        const uniqueAmounts = new Set(); // Set to store unique amounts
+        const uniqueNames = new Set(); // Set to store unique names
+        const dataArr = []; // Array to store data objects
         snapshot.forEach(doc => {
             const data = doc.data();
-            uniqueAmounts.add(parseFloat(data.amount)); // Add unique amounts to the set
+            uniqueNames.add(data.name); // Add unique names to the set
+            dataArr.push(data); // Push data object to array
+        });
+        // Sort names alphabetically
+        const sortedNames = Array.from(uniqueNames).sort();
+        // Clear table body before populating
+        tbody.innerHTML = '';
+        // Populate table with sorted and unique data
+        sortedNames.forEach(name => {
+            const userData = dataArr.find(data => data.name === name);
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${data.name}</td>
-                <td>${data.textbooks.join(', ')}</td>
-                <td>${data.method}</td>
-                <td>${data.amount} Naira</td>
+                <td>${userData.name}</td>
+                <td>${userData.textbooks.join(', ')}</td>
+                <td>${userData.method}</td>
+                <td>${userData.amount} Naira</td>
             `;
             tbody.appendChild(row);
         });
         // Calculate total amount
-        const totalAmount = Array.from(uniqueAmounts).reduce((acc, curr) => acc + curr, 0);
+        const totalAmount = dataArr.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
         // Display total amount in label element
         totalLabel.textContent = totalAmount;
+        // Display total number of responses
+        totalResponsesLabel.textContent = sortedNames.length;
     } catch (error) {
         console.error("Error fetching documents: ", error);
     }
 }
 
-// Function to count total responses
-async function countTotalResponses() {
-  fetchData()
-    try {
-        const snapshot = await db.collection("data").get();
-        totalResponsesLabel.textContent = snapshot.size; // Display total number of documents
-    } catch (error) {
-        console.error("Error counting total responses: ", error);
-    }
-}
-fetchData()
-
-// Call the fetchData and countTotalResponses functions when the DOM content is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    fetchData();
-    countTotalResponses();
-});
+// Call the fetchData function when the DOM content is loaded
+document.addEventListener('DOMContentLoaded', fetchData);
