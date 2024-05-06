@@ -45,6 +45,7 @@ async function fetchData() {
 
 // Function to count total responses
 async function countTotalResponses() {
+  countTotalResponses()
     try {
         const snapshot = await db.collection("data").get();
         totalResponsesLabel.textContent = snapshot.size; // Display total number of documents
@@ -52,6 +53,7 @@ async function countTotalResponses() {
         console.error("Error counting total responses: ", error);
     }
 }
+countTotalResponses()
 
 // Call the fetchData and countTotalResponses functions when the DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
