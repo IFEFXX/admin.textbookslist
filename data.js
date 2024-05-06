@@ -14,7 +14,7 @@ const db = firebase.firestore();
 
 // Get reference to the table body
 const tbody = document.getElementById('data-body');
-
+const total = document.getElementById('totalr');
 // Function to fetch data and populate the table
 async function fetchData() {
     try {
@@ -34,6 +34,14 @@ async function fetchData() {
         console.error("Error fetching documents: ", error);
     }
 }
+async function countTotalUsers() {
+    try {
+      const querySnapshot = await db.collection("reqs").get();
+      total.textContent = querySnapshot.size; // Return the size of the query snapshot (total documents)
+    } catch (error) {
+      console.error("Error counting total users: ", error);
+    }
+   }
 
 // Call the fetchData function when the DOM content is loaded
 document.addEventListener('DOMContentLoaded', fetchData);
