@@ -41,6 +41,7 @@ async function fetchData() {
                 <td>${userData.textbooks.join(', ')}</td>
                 <td>${userData.method}</td>
                 <td>${userData.amount} Naira</td>
+                <td>${userData.status ? userData.status : '<button onclick="confirmStatus(\'' + userData.id + '\')">Not Confirmed</button>'}</td>
                 <td><button onclick="deleteRow('${userData.id}')">Delete</button></td>
             `;
             tbody.appendChild(row);
@@ -71,6 +72,20 @@ async function deleteRow(docId) {
         fetchData();
     } catch (error) {
         console.error("Error deleting row: ", error);
+    }
+}
+
+// Function to confirm status
+async function confirmStatus(docId) {
+    try {
+        // Get document reference
+        const docRef = db.collection("data").doc(docId);
+        // Update status to "Confirmed"
+        await docRef.update({ status: "Confirmed" });
+        // Fetch data again to update table
+        fetchData();
+    } catch (error) {
+        console.error("Error confirming status: ", error);
     }
 }
 
