@@ -17,45 +17,36 @@ const tbody = document.getElementById('data-body');
 const totalLabel = document.getElementById('total-amount');
 const totalResponsesLabel = document.getElementById('totalr');
 
-// Function to fetch data, remove duplicates, sort alphabetically, and populate the table
+// Function to fetch data and populate the table
 async function fetchData() {
     try {
         const snapshot = await db.collection("data").get();
+        let totalAmount = 0; // Initialize total amount
         const uniqueNames = new Set(); // Set to store unique names
-        const dataArr = []; // Array to store data objects
         snapshot.forEach(doc => {
             const data = doc.data();
             uniqueNames.add(data.name); // Add unique names to the set
-            dataArr.push({ id: doc.id, ...data }); // Push data object with document id to array
-        });
-        // Sort names alphabetically
-        const sortedNames = Array.from(uniqueNames).sort();
-        // Clear table body before populating
-        tbody.innerHTML = '';
-        // Populate table with sorted and unique data
-        sortedNames.forEach(name => {
-            const userData = dataArr.find(data => data.name === name);
+            totalAmount += parseFloat(data.amount); // Add amount to total
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${userData.name}</td>
-                <td>${userData.textbooks.join(', ')}</td>
-                <td>${userData.method}</td>
-                <td>${userData.amount} Naira</td>
-                <td>${userData.status ? userData.status : '<button onclick="confirmStatus(\'' + userData.id + '\')">Not Confirmed</button>'}</td>
-                <td><button onclick="deleteRow('${userData.id}')">Delete</button></td>
+                <td>${data.name}</td>
+                <td>${data.textbooks.join(', ')}</td>
+                <td>${data.method}</td>
+                <td>${data.amount} Naira</td>
+                <td>${data.status ? data.status : '<button onclick="confirmStatus(\'' + doc.id + '\')">Not Confirmed</button>'}</td>
+                <td><button onclick="deleteRow('${doc.id}')">Delete</button></td>
             `;
             tbody.appendChild(row);
         });
-        // Calculate total amount
-        const totalAmount = dataArr.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
         // Display total amount in label element
         totalLabel.textContent = totalAmount;
         // Display total number of responses
-        totalResponsesLabel.textContent = sortedNames.length;
+        totalResponsesLabel.textContent = uniqueNames.size;
     } catch (error) {
         console.error("Error fetching documents: ", error);
     }
 }
+
 
 // Function to delete a row and move it to another collection
 async function deleteRow(docId) {
