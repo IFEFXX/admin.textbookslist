@@ -18,15 +18,16 @@ const totalLabel = document.getElementById('total-amount');
 const totalResponsesLabel = document.getElementById('totalr');
 
 // Function to fetch data and populate the table
+// Function to fetch data and populate the table
 async function fetchData() {
     try {
         const snapshot = await db.collection("data").get();
-        let totalAmount = 0; // Initialize total amount
+        const amounts = []; // Array to store amounts
         const uniqueNames = new Set(); // Set to store unique names
         snapshot.forEach(doc => {
             const data = doc.data();
             uniqueNames.add(data.name); // Add unique names to the set
-            totalAmount += parseFloat(data.amount); // Add amount to total
+            amounts.push(parseFloat(data.amount)); // Store amount in the array
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${data.name}</td>
@@ -38,6 +39,8 @@ async function fetchData() {
             `;
             tbody.appendChild(row);
         });
+        // Calculate total amount by summing up amounts array
+        const totalAmount = amounts.reduce((acc, curr) => acc + curr, 0);
         // Display total amount in label element
         totalLabel.textContent = totalAmount;
         // Display total number of responses
@@ -46,7 +49,6 @@ async function fetchData() {
         console.error("Error fetching documents: ", error);
     }
 }
-
 
 // Function to delete a row and move it to another collection
 async function deleteRow(docId) {
