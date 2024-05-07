@@ -18,14 +18,18 @@ const totalLabel = document.getElementById('total-amount');
 const totalResponsesLabel = document.getElementById('totalr');
 
 // Function to fetch data and populate the table
-// Function to fetch data and populate the table
 async function fetchData() {
     try {
         const snapshot = await db.collection("data").get();
+        const dataArr = []; // Array to store data objects
+        snapshot.forEach(doc => {
+            dataArr.push(doc.data()); // Push data object to array
+        });
+        // Sort data array by name
+        dataArr.sort((a, b) => a.name.localeCompare(b.name));
         const amounts = []; // Array to store amounts
         const uniqueNames = new Set(); // Set to store unique names
-        snapshot.forEach(doc => {
-            const data = doc.data();
+        dataArr.forEach(data => {
             uniqueNames.add(data.name); // Add unique names to the set
             amounts.push(parseFloat(data.amount)); // Store amount in the array
             const row = document.createElement('tr');
@@ -33,7 +37,7 @@ async function fetchData() {
                 <td>${data.name}</td>
                 <td>${data.textbooks.join(', ')}</td>
                 <td>${data.method}</td>
-                <td>${data.amount} Naira</td>
+                <td>₦${data.amount}</td>
                 <td>${data.status ? data.status : '<button onclick="confirmStatus(\'' + doc.id + '\')">Not Confirmed</button>'}</td>
                 <td><button onclick="deleteRow('${doc.id}')">Delete</button></td>
             `;
