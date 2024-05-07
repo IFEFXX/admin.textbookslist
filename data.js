@@ -18,6 +18,7 @@ const totalLabel = document.getElementById('total-amount');
 const totalResponsesLabel = document.getElementById('totalr');
 
 // Function to fetch data and populate the table
+// Function to fetch data and populate the table
 async function fetchData() {
     try {
         const snapshot = await db.collection("data").get();
@@ -32,19 +33,24 @@ async function fetchData() {
         dataArr.forEach(data => {
             uniqueNames.add(data.name); // Add unique names to the set
             amounts.push(parseFloat(data.amount)); // Store amount in the array
+        });
+        // Calculate total amount by summing up amounts array
+        const totalAmount = amounts.reduce((acc, curr) => acc + curr, 0);
+        // Clear table body before populating
+        tbody.innerHTML = '';
+        // Populate table with sorted and unique data
+        dataArr.forEach(data => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${data.name}</td>
                 <td>${data.textbooks.join(', ')}</td>
                 <td>${data.method}</td>
-                <td>₦${data.amount}</td>
+                <td>N ${data.amount} </td>
                 <td>${data.status ? data.status : '<button onclick="confirmStatus(\'' + doc.id + '\')">Not Confirmed</button>'}</td>
                 <td><button onclick="deleteRow('${doc.id}')">Delete</button></td>
             `;
             tbody.appendChild(row);
         });
-        // Calculate total amount by summing up amounts array
-        const totalAmount = amounts.reduce((acc, curr) => acc + curr, 0);
         // Display total amount in label element
         totalLabel.textContent = totalAmount;
         // Display total number of responses
@@ -53,6 +59,7 @@ async function fetchData() {
         console.error("Error fetching documents: ", error);
     }
 }
+
 
 // Function to delete a row and move it to another collection
 async function deleteRow(docId) {
