@@ -26,7 +26,7 @@ async function fetchData() {
         snapshot.forEach(doc => {
             const data = doc.data();
             uniqueNames.add(data.name); // Add unique names to the set
-            dataArr.push(data); // Push data object to array
+            dataArr.push({ id: doc.id, ...data }); // Push data object with document id to array
         });
         // Sort names alphabetically
         const sortedNames = Array.from(uniqueNames).sort();
@@ -41,6 +41,7 @@ async function fetchData() {
                 <td>${userData.textbooks.join(', ')}</td>
                 <td>${userData.method}</td>
                 <td>${userData.amount} Naira</td>
+                <td><button onclick="deleteRow('${userData.id}')">Delete</button></td>
             `;
             tbody.appendChild(row);
         });
@@ -52,6 +53,24 @@ async function fetchData() {
         totalResponsesLabel.textContent = sortedNames.length;
     } catch (error) {
         console.error("Error fetching documents: ", error);
+    }
+}
+
+// Function to delete a row and move it to another collection
+async function deleteRow(docId) {
+    try {
+        // Get document reference
+        const docRef = db.collection("data").doc(docId);
+        // Get document data
+        const docData = (await docRef.get()).data();
+        // Add document data to another collection
+        await db.collection("deletedData").add(docData);
+        // Delete document from original collection
+        await docRef.delete();
+        // Fetch data again to update table
+        fetchData();
+    } catch (error) {
+        console.error("Error deleting row: ", error);
     }
 }
 
