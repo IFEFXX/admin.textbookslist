@@ -66,7 +66,9 @@ async function fetchData() {
 // Function to generate PDF
 function generatePDF() {
   alert("new")
-    const doc = new jsPDF();
+  try{
+    const doc = new jsPDF()
+  
     // Set heading
     doc.setFontSize(20);
     doc.text("Jupeb Textbook Payment List 2023/2024", 20, 20);
@@ -79,6 +81,10 @@ function generatePDF() {
         doc.addImage(imgData, 'PNG', 10, 30, imgWidth, imgHeight);
         doc.save('jupeb_payment_list.pdf');
     });
+  }catch(err){
+    alert(err)
+    alert(err.message)
+  }
                                                             }
 
 
