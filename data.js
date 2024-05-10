@@ -57,6 +57,23 @@ async function fetchData() {
 }
 
 
+// Function to generate PDF
+function generatePDF() {
+    const doc = new jsPDF();
+    // Set heading
+    doc.setFontSize(20);
+    doc.text("Jupeb Textbook Payment List 2023/2024", 20, 20);
+
+    // Convert table to canvas
+    html2canvas(document.getElementById("data-table")).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = 190;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        doc.addImage(imgData, 'PNG', 10, 30, imgWidth, imgHeight);
+        doc.save('jupeb_payment_list.pdf');
+    });
+                                                            }
+
 
 // Function to delete a row and move it to another collection
 async function deleteRow(docId) {
