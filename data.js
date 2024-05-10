@@ -18,11 +18,13 @@ const totalLabel = document.getElementById('total-amount');
 const totalResponsesLabel = document.getElementById('totalr');
 
 // Function to fetch data and populate the table
+// Function to fetch data and populate the table
 async function fetchData() {
     try {
         const snapshot = await db.collection("data").get();
         let totalAmount = 0; // Initialize total amount
         const uniqueNames = new Set(); // Set to store unique names
+        const rows = []; // Array to store table rows
         snapshot.forEach(doc => {
             const data = doc.data();
             uniqueNames.add(data.name); // Add unique names to the set
@@ -36,6 +38,14 @@ async function fetchData() {
                 <td>${data.status ? data.status : '<button onclick="confirmStatus(\'' + doc.id + '\')">Not Confirmed</button>'}</td>
                 <td><button onclick="deleteRow('${doc.id}')">Delete</button></td>
             `;
+            rows.push(row); // Push row to the array
+        });
+        // Sort table rows alphabetically by name
+        rows.sort((a, b) => a.children[0].textContent.localeCompare(b.children[0].textContent));
+        // Clear the table body
+        tbody.innerHTML = '';
+        // Append sorted rows to the table body
+        rows.forEach(row => {
             tbody.appendChild(row);
         });
         // Display total amount in label element
@@ -46,6 +56,7 @@ async function fetchData() {
         console.error("Error fetching documents: ", error);
     }
 }
+
 
 
 // Function to delete a row and move it to another collection
