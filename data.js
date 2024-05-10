@@ -64,26 +64,40 @@ async function fetchData() {
 
 
 // Function to generate PDF
+// Function to generate PDF
 function generatePDF() {
   alert("new")
-  try{
-    const doc = new jsPDF()
-  
-    // Set heading
-    doc.setFontSize(20);
-    doc.text("Jupeb Textbook Payment List 2023/2024", 20, 20);
 
-    // Convert table to canvas
-    html2canvas(document.getElementById("data-table")).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = 190;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        doc.addImage(imgData, 'PNG', 10, 30, imgWidth, imgHeight);
-        doc.save('jupeb_payment_list.pdf');
+  try{
+    const tableData = [];
+    // Iterate through table rows and cells to extract data
+    const rows = document.querySelectorAll('#data-table tbody tr');
+    rows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td').forEach(cell => {
+            rowData.push(cell.textContent.trim());
+        });
+        tableData.push(rowData);
     });
+
+    // Define document definition for pdfmake
+    const documentDefinition = {
+        content: [
+            { text: 'Jupeb Textbook Payment List 2023/2024', style: 'header' },
+            { table: { body: [['Name', 'Textbooks', 'Method', 'Amount']].concat(tableData) } }
+        ],
+        styles: {
+            header: { fontSize: 20, bold: true, margin: [0, 0, 0, 10] }
+        }
+    };
+
+    // Generate PDF and initiate download
+    pdfmake.createPdf(documentDefinition).download('jupeb_payment_list.pdf');
   }catch(err){
     alert(err)
     alert(err.message)
+  }
+  
   }
                                                             }
 
