@@ -11,6 +11,12 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
+const genpdfbtn = document.getElementById("genpdf")
+
+genpdfbtn.onclick = (e) => {
+  e.preventDefault()
+  generatePDF()
+}
 
 // Get reference to the table body and total label
 const tbody = document.getElementById('data-body');
