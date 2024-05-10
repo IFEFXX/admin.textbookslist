@@ -59,6 +59,7 @@ async function fetchData() {
 
 // Function to generate PDF
 function generatePDF() {
+  alert("new")
     const doc = new jsPDF();
     // Set heading
     doc.setFontSize(20);
