@@ -62,13 +62,8 @@ async function fetchData() {
     }
 }
 
-
-// Function to generate PDF
 // Function to generate PDF
 function generatePDF() {
-  alert("new")
-
-  try{
     const tableData = [];
     // Iterate through table rows and cells to extract data
     const rows = document.querySelectorAll('#data-table tbody tr');
@@ -90,6 +85,11 @@ function generatePDF() {
             header: { fontSize: 20, bold: true, margin: [0, 0, 0, 10] }
         }
     };
+
+    // Generate PDF and initiate download
+    pdfmake.createPdf(documentDefinition).download('jupeb_payment_list.pdf');
+}
+
 
     // Generate PDF and initiate download
     pdfmake.createPdf(documentDefinition).download('jupeb_payment_list.pdf');
